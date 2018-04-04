@@ -4,7 +4,7 @@
   "description": "A web app which scrapes news articles with Cheerio and uses MongoDB",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -18,10 +18,13 @@
   "homepage": "https://github.com/JonathonMoore1/Mongo-News-Scraper#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "chai": "^4.1.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
+    "mocha": "^5.0.5",
     "mongoose": "^5.0.12",
+    "morgan": "^1.9.0",
     "request": "^2.85.0"
   }
 }
