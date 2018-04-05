@@ -19,6 +19,10 @@ app.use(bodyParser.json());
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+// Using "public" directory
+const path = require("path");
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 // Routes
 const routes = require("./routes/index.js");
 app.use("/", routes.view);
@@ -41,12 +45,8 @@ db.on("error", error => {
   }
 });
 
-db.once("open", () => {
-  console.log("MongoDB connection successful");
-});
+db.once("open", () => console.log("MongoDB connection successful"));
 
 // Listener
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, err => {
-  console.log("App listening on port " + PORT);
-})
+app.listen(PORT, err => console.log("App listening on port " + PORT))

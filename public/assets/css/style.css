@@ -1,0 +1,14 @@
+.container {
+  background-image: url("../../public/assets/img/dust_scratches/dust_scratches.png");
+  color: pink;
+}
+
+#scrape-btn {
+  color: antiquewhite;
+  background-color: red
+}
+
+nav {
+  background-color: rgb(43, 24, 165);
+  color: rgb(174, 198, 245)
+}
