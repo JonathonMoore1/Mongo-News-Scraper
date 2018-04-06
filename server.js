@@ -25,8 +25,8 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Routes
 const routes = require("./routes/index.js");
-app.use("/", routes.view);
-app.use("/api/", routes.api);
+app.use(routes.view);
+app.use(routes.api);
 
 
 // Mongoose configuration
