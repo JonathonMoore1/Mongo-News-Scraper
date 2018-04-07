@@ -53,7 +53,7 @@ app.use(routes.api);
 //const dbRouter = require("./controllers/headline");
 app.get("/scrape", (req, res) => {
   request("https://www.nytimes.com/", (err, response, html) => {
-    const $ = cheerio.load(html);
+    const $ = cheerio.load(response);
     
     $("h2 .story").each((i, el) => {
       let result = {};
@@ -61,12 +61,13 @@ app.get("/scrape", (req, res) => {
       result.summary = $(this).children("p").text();
       result.link = $(this).children("a").attr("href");
 
-      console.log(JSON.stringify(result))
+      
       // 
       db.Headline.create(result)
         .then((dbArticle) => console.log(dbArticle))
         .catch((err) => res.json(err));
     });
+    console.log(html);
     res.send("Scrape complete!");
   });
 });
