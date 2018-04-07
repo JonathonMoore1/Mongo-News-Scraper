@@ -7,7 +7,7 @@ const cheerio = require("cheerio");
 const request = require("request");
 const Headline = require("../models/index").Headline;
 
-app.get("/scrape", (req, res) => {
+router.get("/scrape", (req, res) => {
   request("https://www.nytimes.com/", (err, response, html) => {
     const $ = cheerio.load(html);
     $("article .story").each((response) => {
@@ -31,7 +31,7 @@ app.get("/scrape", (req, res) => {
 });
 
 // Route for getting all Articles from the db
-app.get("/articles", function(req, res) {
+router.get("/articles", function(req, res) {
   // Grab every document in the Articles collection
   db.Article.find({})
     .then(function(dbArticle) {
@@ -45,7 +45,7 @@ app.get("/articles", function(req, res) {
 });
 
 // Route for grabbing a specific Article by id, populate it with it's note
-app.get("/articles/:id", function(req, res) {
+router.get("/articles/:id", function(req, res) {
   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
   db.Article.findOne({ _id: req.params.id })
     // ..and populate all of the notes associated with it
@@ -61,7 +61,7 @@ app.get("/articles/:id", function(req, res) {
 });
 
 // Route for saving/updating an Article's associated Note
-app.post("/articles/:id", function(req, res) {
+router.post("/articles/:id", function(req, res) {
   // Create a new note and pass the req.body to the entry
   db.Note.create(req.body)
     .then(function(dbNote) {
@@ -79,3 +79,5 @@ app.post("/articles/:id", function(req, res) {
       res.json(err);
     });
 });
+
+module.exports = router;

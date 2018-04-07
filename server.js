@@ -1,52 +1,75 @@
-// Dependencies
 const express = require("express");
-const request = require("request");
 const bodyParser = require("body-parser");
-const exphbs = require("express-handlebars");
-const mongoose = require("mongoose");
-const cheerio = require("cheerio");
 const logger = require("morgan");
+const mongoose = require("mongoose");
+const exphbs = require("express-handlebars");
+// Our scraping tools
+// Axios is a promised-based http library, similar to jQuery's Ajax method
+// It works on the client and on the server
+const axios = require("axios");
+const request = require("request");
+const cheerio = require("cheerio");
+
+// Require all models
+const db = require("./models");
+
+const PORT = process.env.PORT || 8080;
 
 // Initialize Express
 const app = express();
 
-// Use Morgan and Body Parser
-app.use(logger("dev"));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 // Set Handlebars engine
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
+
+// Configure middleware
+
+// Use morgan logger for logging requests
+app.use(logger("dev"));
+// Use body-parser for handling form submissions
+app.use(bodyParser.urlencoded({ extended: true }));
+// Use express.static to serve the public folder as a static directory
+app.use(express.static("public"));
+
+// By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
+// Connect to the Mongo DB
+mongoose.Promise = Promise;
+mongoose.connect("mongodb://localhost/mongo-news-scraper");
+
+mongoose.connection.on("error", (error) => console.log("Database Error: ", error));
+mongoose.connection.once("open", () => console.log("MongoDB connection successful"));
 
 // Using "public" directory
 const path = require("path");
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Routes
-const routes = require("./routes/index.js");
+const routes = require("./routes");
 app.use(routes.view);
 app.use(routes.api);
 
 
-// Mongoose configuration
+//const dbRouter = require("./controllers/headline");
+app.get("/scrape", (req, res) => {
+  request("https://www.nytimes.com/", (err, response, html) => {
+    const $ = cheerio.load(html);
+    
+    $("h2 .story").each((i, el) => {
+      let result = {};
+      result.title = $(this).children("a").text();
+      result.summary = $(this).children("p").text();
+      result.link = $(this).children("a").attr("href");
 
-// Promises
-mongoose.Promise = Promise;
-
-// Connection
-mongoose.connect("mongodb://localhost/mongo-news-scraper");
-
-const db = mongoose.connection;
-
-db.on("error", error => {
-  if (error) {
-    console.log("Database Error: ", error);
-  }
+      console.log(JSON.stringify(result))
+      // 
+      db.Headline.create(result)
+        .then((dbArticle) => console.log(dbArticle))
+        .catch((err) => res.json(err));
+    });
+    res.send("Scrape complete!");
+  });
 });
 
-db.once("open", () => console.log("MongoDB connection successful"));
-
 // Listener
-const PORT = process.env.PORT || 8080;
 app.listen(PORT, err => console.log("App listening on port " + PORT))

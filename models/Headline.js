@@ -6,18 +6,21 @@ const Schema = mongoose.Schema;
 
 // Headline will be stored in `body`
 const HeadlineSchema = new Schema({
-  body: {
+  title: {
     type: String,
-    required: true
+   // required: true
   },
   summary: {
     type: String,
-    required: true
+   // required: true
   },
   link: {
     type: String,
-    // required: true,
-    // match: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/
+   // required: true
+  },
+  note: {
+    type: Schema.Types.ObjectId,
+    ref: "Note"
   }
 });
 
